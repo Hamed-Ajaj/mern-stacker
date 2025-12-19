@@ -7,15 +7,14 @@ const __dirname = path.dirname(__filename);
 
 export async function createBase(projectName: string) {
   const templatePath = path.join(__dirname, "../templates/base");
-  const targetPath = path.resolve(process.cwd(), projectName);
+
+  // IMPORTANT FIX 👇
+  const cwd = process.env.INIT_CWD || process.cwd();
+  const targetPath = path.resolve(cwd, projectName);
 
   if (await fs.pathExists(targetPath)) {
     throw new Error(`Directory "${projectName}" already exists`);
   }
 
-  await fs.copy(templatePath, targetPath, {
-    filter: (src) => {
-      return !src.includes("node_modules");
-    }
-  });
+  await fs.copy(templatePath, targetPath);
 }
