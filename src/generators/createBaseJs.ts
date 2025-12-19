@@ -5,8 +5,8 @@ import { fileURLToPath } from "url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-export async function createBase(projectName: string) {
-  const templatePath = path.join(__dirname, "../templates/base");
+export async function createBaseJs(projectName: string) {
+  const templatePath = path.join(__dirname, "../templates/base-js");
 
   const cwd = process.env.INIT_CWD || process.cwd();
   const targetPath = path.resolve(cwd, projectName);

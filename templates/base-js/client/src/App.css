@@ -15,15 +15,16 @@ body {
   align-items: center;
   justify-content: center;
   padding: 2.5rem;
+  text-align: center;
 }
 
-div > h1 {
+h1 {
   margin: 0 0 0.75rem;
   font-size: clamp(2.25rem, 4vw, 3rem);
   letter-spacing: -0.02em;
 }
 
-div > p {
+p {
   margin: 0;
   color: #b8c4d6;
   font-size: 1.125rem;
