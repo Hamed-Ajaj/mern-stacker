@@ -1,0 +1,43 @@
+{
+  "name": "mern-stacker",
+  "private": false,
+  "description": "Scaffold a modern MERN-style stack with React, Vite, and Express",
+  "version": "1.0.0",
+  "type": "module",
+  "author": "Hamed Ajaj",
+  "keywords": [
+    "mern",
+    "cli",
+    "scaffold",
+    "react",
+    "vite",
+    "express",
+    "fullstack"
+  ],
+  "scripts": {
+    "build": "tsup src/cli.ts --format esm --out-dir dist",
+    "dev": "ts-node src/cli.ts"
+  },
+  "bin": {
+    "mern-stacker": "dist/cli.js"
+  },
+  "files": [
+    "dist",
+    "templates"
+  ],
+  "license": "ISC",
+  "packageManager": "pnpm@10.24.0",
+  "dependencies": {
+    "@inquirer/prompts": "^8.1.0",
+    "chalk": "^5.6.2",
+    "commander": "^14.0.2",
+    "execa": "^9.6.1",
+    "fs-extra": "^11.3.3",
+    "ora": "^9.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^25.0.3",
+    "tsup": "^8.5.1",
+    "typescript": "^5.9.3"
+  }
+}

@@ -1,0 +1,96 @@
+{
+  "name": "@inquirer/external-editor",
+  "version": "2.0.2",
+  "description": "Edit a string with the users preferred text editor using $VISUAL or $ENVIRONMENT",
+  "type": "module",
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/SBoudrias/Inquirer.js.git"
+  },
+  "keywords": [
+    "answer",
+    "answers",
+    "ask",
+    "base",
+    "cli",
+    "command",
+    "command-line",
+    "confirm",
+    "enquirer",
+    "generate",
+    "generator",
+    "hyper",
+    "input",
+    "inquire",
+    "inquirer",
+    "interface",
+    "iterm",
+    "javascript",
+    "menu",
+    "node",
+    "nodejs",
+    "prompt",
+    "promptly",
+    "prompts",
+    "question",
+    "readline",
+    "scaffold",
+    "scaffolder",
+    "scaffolding",
+    "stdin",
+    "stdout",
+    "terminal",
+    "tty",
+    "ui",
+    "yeoman",
+    "yo",
+    "zsh",
+    "editor",
+    "external",
+    "external-editor",
+    "user",
+    "visual"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "dist"
+  ],
+  "engines": {
+    "node": ">=23.5.0 || ^22.13.0 || ^21.7.0 || ^20.12.0"
+  },
+  "author": "Simon Boudrias <admin@simonboudrias.com>",
+  "license": "MIT",
+  "sideEffects": false,
+  "homepage": "https://github.com/SBoudrias/Inquirer.js/blob/main/packages/external-editor/README.md",
+  "dependencies": {
+    "chardet": "^2.1.1",
+    "iconv-lite": "^0.7.0"
+  },
+  "devDependencies": {
+    "@types/chardet": "^1.0.0",
+    "typescript": "^5.9.3"
+  },
+  "peerDependencies": {
+    "@types/node": ">=18"
+  },
+  "peerDependenciesMeta": {
+    "@types/node": {
+      "optional": true
+    }
+  },
+  "scripts": {
+    "tsc": "tsc"
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "gitHead": "9c724296daad3d740b09173f9aae035dc62cb106"
+}
