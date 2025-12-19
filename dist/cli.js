@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 // src/cli.ts
 import { program } from "commander";
 
@@ -17,7 +19,11 @@ async function createBase(projectName) {
   if (await fs.pathExists(targetPath)) {
     throw new Error(`Directory "${projectName}" already exists`);
   }
-  await fs.copy(templatePath, targetPath);
+  await fs.copy(templatePath, targetPath, {
+    filter: (src) => {
+      return !src.includes("node_modules");
+    }
+  });
 }
 
 // src/run.ts
