@@ -25,8 +25,8 @@ export async function run(projectName?: string) {
   const stack = await select({
     message: "Choose a stack to generate",
     choices: [
-      { name: "Base (React + Vite + Express)", value: "base" },
-      { name: "Base + Tailwind (React + Vite + Express)", value: "base-tailwind" },
+      { name: "Base (React + Vite + Express + mySql)", value: "base" },
+      { name: "Base + Tailwind (React + Vite + Express + mySql)", value: "base-tailwind" },
     ],
   });
 
