@@ -4,7 +4,7 @@
 import { program } from "commander";
 
 // src/run.ts
-import { input, select } from "@inquirer/prompts";
+import { checkbox, input, select } from "@inquirer/prompts";
 import ora from "ora";
 
 // src/generators/createProject.ts
@@ -97,17 +97,10 @@ async function run(projectName) {
       { name: "React Router", value: "router-react" }
     ]
   });
-  const styling = await select({
-    message: "Choose styling",
+  const frontendFeatures = await checkbox({
+    message: "Choose frontend features",
     choices: [
-      { name: "None", value: "none" },
-      { name: "Tailwind CSS", value: "tailwind" }
-    ]
-  });
-  const dataFetching = await select({
-    message: "Choose data fetching",
-    choices: [
-      { name: "None", value: "none" },
+      { name: "Tailwind CSS", value: "tailwind" },
       { name: "TanStack Query", value: "query-tanstack" }
     ]
   });
@@ -130,9 +123,8 @@ async function run(projectName) {
   try {
     const dockerFeature = dockerChoice === "yes" && database !== "none" ? database === "db-postgres" ? "docker-postgres" : "docker-mysql" : "none";
     const selectedFeatures = [
-      styling,
+      ...frontendFeatures,
       router,
-      dataFetching,
       database,
       dockerFeature
     ].filter((feature) => feature !== "none");
@@ -144,6 +136,7 @@ async function run(projectName) {
     spinner.succeed("Project created successfully");
     console.log("\nNext steps:");
     console.log(`  cd ${resolvedName}`);
+    console.log("  docker build up -d");
     console.log("  cd client && npm install && npm run dev");
     console.log("  cd server && npm install && npm run dev");
   } catch (error) {
