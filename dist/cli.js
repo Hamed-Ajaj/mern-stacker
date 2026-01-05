@@ -7,68 +7,74 @@ import { program } from "commander";
 import { input, select } from "@inquirer/prompts";
 import ora from "ora";
 
-// src/generators/createBase.ts
+// src/generators/createProject.ts
 import fs from "fs-extra";
 import path from "path";
 import { fileURLToPath } from "url";
 var __filename = fileURLToPath(import.meta.url);
 var __dirname = path.dirname(__filename);
-async function createBase(projectName) {
-  const templatePath = path.join(__dirname, "../templates/base");
+function isPlainObject(value) {
+  return Boolean(value) && typeof value === "object" && !Array.isArray(value);
+}
+function deepMerge(target, source) {
+  for (const [key, value] of Object.entries(source)) {
+    if (isPlainObject(value) && isPlainObject(target[key])) {
+      deepMerge(target[key], value);
+      continue;
+    }
+    target[key] = value;
+  }
+}
+async function listFiles(root) {
+  const entries = await fs.readdir(root, { withFileTypes: true });
+  const files = [];
+  for (const entry of entries) {
+    const entryPath = path.join(root, entry.name);
+    if (entry.isDirectory()) {
+      files.push(...await listFiles(entryPath));
+    } else {
+      files.push(entryPath);
+    }
+  }
+  return files;
+}
+async function applyFeature(targetPath, language, featureName) {
+  const featurePath = path.join(__dirname, "../templates/features", featureName);
+  const featureFilesPath = path.join(featurePath, "files", language);
+  const featurePatchesPath = path.join(featurePath, "patches");
+  if (await fs.pathExists(featureFilesPath)) {
+    await fs.copy(featureFilesPath, targetPath, { overwrite: true });
+  }
+  if (await fs.pathExists(featurePatchesPath)) {
+    const patchFiles = await listFiles(featurePatchesPath);
+    for (const patchFile of patchFiles) {
+      const relativePath = path.relative(featurePatchesPath, patchFile);
+      const targetFile = path.join(targetPath, relativePath);
+      const patchData = await fs.readJson(patchFile);
+      const targetData = await fs.pathExists(targetFile) ? await fs.readJson(targetFile) : {};
+      if (!isPlainObject(targetData) || !isPlainObject(patchData)) {
+        throw new Error(`Patch file "${relativePath}" must contain a JSON object`);
+      }
+      deepMerge(targetData, patchData);
+      await fs.outputJson(targetFile, targetData, { spaces: 2 });
+    }
+  }
+}
+async function createProject({
+  projectName,
+  language,
+  features
+}) {
+  const templatePath = path.join(__dirname, "../templates/base", language);
   const cwd = process.env.INIT_CWD || process.cwd();
   const targetPath = path.resolve(cwd, projectName);
   if (await fs.pathExists(targetPath)) {
     throw new Error(`Directory "${projectName}" already exists`);
   }
   await fs.copy(templatePath, targetPath);
-}
-
-// src/generators/createBaseJs.ts
-import fs2 from "fs-extra";
-import path2 from "path";
-import { fileURLToPath as fileURLToPath2 } from "url";
-var __filename2 = fileURLToPath2(import.meta.url);
-var __dirname2 = path2.dirname(__filename2);
-async function createBaseJs(projectName) {
-  const templatePath = path2.join(__dirname2, "../templates/base-js");
-  const cwd = process.env.INIT_CWD || process.cwd();
-  const targetPath = path2.resolve(cwd, projectName);
-  if (await fs2.pathExists(targetPath)) {
-    throw new Error(`Directory "${projectName}" already exists`);
+  for (const feature of features) {
+    await applyFeature(targetPath, language, feature);
   }
-  await fs2.copy(templatePath, targetPath);
-}
-
-// src/generators/createBaseTailwind.ts
-import fs3 from "fs-extra";
-import path3 from "path";
-import { fileURLToPath as fileURLToPath3 } from "url";
-var __filename3 = fileURLToPath3(import.meta.url);
-var __dirname3 = path3.dirname(__filename3);
-async function createBaseTailwind(projectName) {
-  const templatePath = path3.join(__dirname3, "../templates/base-tailwind");
-  const cwd = process.env.INIT_CWD || process.cwd();
-  const targetPath = path3.resolve(cwd, projectName);
-  if (await fs3.pathExists(targetPath)) {
-    throw new Error(`Directory "${projectName}" already exists`);
-  }
-  await fs3.copy(templatePath, targetPath);
-}
-
-// src/generators/createBaseTailwindJs.ts
-import fs4 from "fs-extra";
-import path4 from "path";
-import { fileURLToPath as fileURLToPath4 } from "url";
-var __filename4 = fileURLToPath4(import.meta.url);
-var __dirname4 = path4.dirname(__filename4);
-async function createBaseTailwindJs(projectName) {
-  const templatePath = path4.join(__dirname4, "../templates/base-tailwind-js");
-  const cwd = process.env.INIT_CWD || process.cwd();
-  const targetPath = path4.resolve(cwd, projectName);
-  if (await fs4.pathExists(targetPath)) {
-    throw new Error(`Directory "${projectName}" already exists`);
-  }
-  await fs4.copy(templatePath, targetPath);
 }
 
 // src/run.ts
@@ -84,27 +90,30 @@ async function run(projectName) {
       { name: "JavaScript", value: "js" }
     ]
   });
-  const stack = await select({
-    message: "Choose a stack to generate",
+  const router = await select({
+    message: "Choose a router",
     choices: [
-      { name: "Base (React + Vite + Express + mySql)", value: "base" },
-      { name: "Base + Tailwind (React + Vite + Express + mySql)", value: "base-tailwind" }
+      { name: "None", value: "none" },
+      { name: "React Router", value: "router-react" }
+    ]
+  });
+  const styling = await select({
+    message: "Choose styling",
+    choices: [
+      { name: "None", value: "none" },
+      { name: "Tailwind CSS", value: "tailwind" }
     ]
   });
   const spinner = ora("Creating project...").start();
   try {
-    if (language === "ts" && stack === "base") {
-      await createBase(resolvedName);
-    }
-    if (language === "ts" && stack === "base-tailwind") {
-      await createBaseTailwind(resolvedName);
-    }
-    if (language === "js" && stack === "base") {
-      await createBaseJs(resolvedName);
-    }
-    if (language === "js" && stack === "base-tailwind") {
-      await createBaseTailwindJs(resolvedName);
-    }
+    const selectedFeatures = [styling, router].filter(
+      (feature) => feature !== "none"
+    );
+    await createProject({
+      projectName: resolvedName,
+      language,
+      features: selectedFeatures
+    });
     spinner.succeed("Project created successfully");
     console.log("\nNext steps:");
     console.log(`  cd ${resolvedName}`);

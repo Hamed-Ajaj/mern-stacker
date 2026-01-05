@@ -1,9 +1,6 @@
 import { input, select } from "@inquirer/prompts";
 import ora from "ora";
-import { createBase } from "./generators/createBase";
-import { createBaseJs } from "./generators/createBaseJs";
-import { createBaseTailwind } from "./generators/createBaseTailwind";
-import { createBaseTailwindJs } from "./generators/createBaseTailwindJs";
+import { createProject } from "./generators/createProject";
 
 export async function run(projectName?: string) {
   const resolvedName =
@@ -22,32 +19,34 @@ export async function run(projectName?: string) {
     ],
   });
 
-  const stack = await select({
-    message: "Choose a stack to generate",
+  const router = await select({
+    message: "Choose a router",
     choices: [
-      { name: "Base (React + Vite + Express + mySql)", value: "base" },
-      { name: "Base + Tailwind (React + Vite + Express + mySql)", value: "base-tailwind" },
+      { name: "None", value: "none" },
+      { name: "React Router", value: "router-react" },
+    ],
+  });
+
+  const styling = await select({
+    message: "Choose styling",
+    choices: [
+      { name: "None", value: "none" },
+      { name: "Tailwind CSS", value: "tailwind" },
     ],
   });
 
   const spinner = ora("Creating project...").start();
 
   try {
-    if (language === "ts" && stack === "base") {
-      await createBase(resolvedName);
-    }
+    const selectedFeatures = [styling, router].filter(
+      (feature) => feature !== "none",
+    );
 
-    if (language === "ts" && stack === "base-tailwind") {
-      await createBaseTailwind(resolvedName);
-    }
-
-    if (language === "js" && stack === "base") {
-      await createBaseJs(resolvedName);
-    }
-
-    if (language === "js" && stack === "base-tailwind") {
-      await createBaseTailwindJs(resolvedName);
-    }
+    await createProject({
+      projectName: resolvedName,
+      language,
+      features: selectedFeatures,
+    });
 
     spinner.succeed("Project created successfully");
 
