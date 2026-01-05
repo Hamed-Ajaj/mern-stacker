@@ -1,0 +1,20 @@
+import { Pool } from "pg";
+
+const port = Number(process.env.DB_PORT || 5432);
+
+export const db = new Pool({
+  host: process.env.DB_HOST || "localhost",
+  user: process.env.DB_USER || "app",
+  password: process.env.DB_PASSWORD || "app",
+  database: process.env.DB_NAME || "app_db",
+  port: Number.isNaN(port) ? 5432 : port,
+});
+
+export const testDB = async () => {
+  try {
+    await db.query("SELECT 1");
+    console.log("Postgres connected");
+  } catch (err) {
+    console.error("Postgres connection failed", err);
+  }
+};

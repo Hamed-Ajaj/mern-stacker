@@ -14,8 +14,7 @@
   "packageManager": "pnpm@10.24.0",
   "dependencies": {
     "cors": "^2.8.5",
-    "express": "^5.2.1",
-    "mysql2": "^3.16.0"
+    "express": "^5.2.1"
   },
   "devDependencies": {
     "@types/cors": "^2.8.19",

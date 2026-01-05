@@ -104,11 +104,38 @@ async function run(projectName) {
       { name: "Tailwind CSS", value: "tailwind" }
     ]
   });
+  const dataFetching = await select({
+    message: "Choose data fetching",
+    choices: [
+      { name: "None", value: "none" },
+      { name: "TanStack Query", value: "query-tanstack" }
+    ]
+  });
+  const database = await select({
+    message: "Choose a database",
+    choices: [
+      { name: "None", value: "none" },
+      { name: "Postgres", value: "db-postgres" },
+      { name: "MySQL", value: "db-mysql" }
+    ]
+  });
+  const dockerChoice = await select({
+    message: "Use Docker Compose for the database?",
+    choices: [
+      { name: "No", value: "none" },
+      { name: "Yes", value: "yes" }
+    ]
+  });
   const spinner = ora("Creating project...").start();
   try {
-    const selectedFeatures = [styling, router].filter(
-      (feature) => feature !== "none"
-    );
+    const dockerFeature = dockerChoice === "yes" && database !== "none" ? database === "db-postgres" ? "docker-postgres" : "docker-mysql" : "none";
+    const selectedFeatures = [
+      styling,
+      router,
+      dataFetching,
+      database,
+      dockerFeature
+    ].filter((feature) => feature !== "none");
     await createProject({
       projectName: resolvedName,
       language,
