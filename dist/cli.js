@@ -94,14 +94,21 @@ async function run(projectName) {
     message: "Choose a router",
     choices: [
       { name: "None", value: "none" },
-      { name: "React Router", value: "router-react" }
+      { name: "React Router", value: "router-react" },
+      {
+        name: "TanStack Router",
+        value: "tanstack-router",
+        disabled: "(Coming soon)"
+      }
     ]
   });
   const frontendFeatures = await checkbox({
-    message: "Choose frontend features",
+    message: "Choose additional features",
     choices: [
       { name: "Tailwind CSS", value: "tailwind" },
-      { name: "TanStack Query", value: "query-tanstack" }
+      { name: "TanStack Query", value: "query-tanstack" },
+      { name: "Zustand", value: "zustand" },
+      ...language === "ts" ? [{ name: "Zod", value: "zod" }] : []
     ]
   });
   const database = await select({
