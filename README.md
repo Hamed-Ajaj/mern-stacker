@@ -24,4 +24,4 @@ The goal is **a solid foundation, not a locked-in framework**.
 Run the CLI using `npx`:
 
 ```bash
-npx github:hamed-ajaj/mern-stacker my-app
+npx mern-stacker my-app
