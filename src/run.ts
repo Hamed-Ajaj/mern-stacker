@@ -125,7 +125,7 @@ export async function run(projectName?: string) {
 
     console.log("\nNext steps:");
     console.log(`  cd ${resolvedName}`);
-    console.log("  docker build up -d");
+    console.log("  docker compose up -d");
     if (!installDeps) {
       console.log(`  cd client && ${packageManager} install`);
       console.log(`  cd server && ${packageManager} install`);
