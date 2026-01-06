@@ -4,8 +4,10 @@
 import { program } from "commander";
 
 // src/run.ts
-import { checkbox, input, select } from "@inquirer/prompts";
+import { checkbox, confirm, input, select } from "@inquirer/prompts";
 import ora from "ora";
+import { execa } from "execa";
+import path2 from "path";
 
 // src/generators/createProject.ts
 import fs from "fs-extra";
@@ -126,6 +128,19 @@ async function run(projectName) {
       { name: "Yes", value: "yes" }
     ]
   });
+  const packageManager = await select({
+    message: "Choose a package manager",
+    choices: [
+      { name: "pnpm", value: "pnpm" },
+      { name: "npm", value: "npm" },
+      { name: "yarn", value: "yarn" },
+      { name: "bun", value: "bun" }
+    ]
+  });
+  const installDeps = await confirm({
+    message: "Install dependencies now?",
+    default: true
+  });
   const spinner = ora("Creating project...").start();
   try {
     const dockerFeature = dockerChoice === "yes" && database !== "none" ? database === "db-postgres" ? "docker-postgres" : "docker-mysql" : "none";
@@ -141,11 +156,36 @@ async function run(projectName) {
       features: selectedFeatures
     });
     spinner.succeed("Project created successfully");
+    const cwd = process.env.INIT_CWD || process.cwd();
+    const projectPath = path2.resolve(cwd, resolvedName);
+    const installArgs = ["install"];
+    if (installDeps) {
+      const installSpinner = ora("Installing dependencies...").start();
+      try {
+        await execa(packageManager, installArgs, {
+          cwd: path2.join(projectPath, "client"),
+          stdio: "inherit"
+        });
+        await execa(packageManager, installArgs, {
+          cwd: path2.join(projectPath, "server"),
+          stdio: "inherit"
+        });
+        installSpinner.succeed("Dependencies installed");
+      } catch (installError) {
+        installSpinner.fail("Failed to install dependencies");
+        throw installError;
+      }
+    }
     console.log("\nNext steps:");
     console.log(`  cd ${resolvedName}`);
     console.log("  docker build up -d");
-    console.log("  cd client && npm install && npm run dev");
-    console.log("  cd server && npm install && npm run dev");
+    if (!installDeps) {
+      console.log(`  cd client && ${packageManager} install`);
+      console.log(`  cd server && ${packageManager} install`);
+    }
+    const runScript = packageManager === "npm" ? "npm run dev" : `${packageManager} dev`;
+    console.log(`  cd client && ${runScript}`);
+    console.log(`  cd server && ${runScript}`);
   } catch (error) {
     spinner.fail("Failed to create project");
     console.error(error);
