@@ -18,3 +18,14 @@ export const testDB = async () => {
     console.error("Postgres connection failed", err);
   }
 };
+
+export const ensureUsersTable = async () => {
+  await db.query(`
+    CREATE TABLE IF NOT EXISTS users (
+      id SERIAL PRIMARY KEY,
+      email TEXT UNIQUE NOT NULL,
+      password TEXT NOT NULL,
+      created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+    )
+  `);
+};
