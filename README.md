@@ -25,3 +25,8 @@ Run the CLI using `npx`:
 
 ```bash
 npx mern-stacker my-app
+```
+
+## Contributing
+
+Want to help? See `CONTRIBUTION.md` for setup and contribution guidelines.
