@@ -49,7 +49,7 @@ async function applyFeature(
   language: Language,
   featureName: string,
 ) {
-  const featurePath = path.join(__dirname, "../templates/features", featureName);
+  const featurePath = path.join(__dirname, "../../templates/features", featureName);
   const featureFilesPath = path.join(featurePath, "files", language);
   const featurePatchesPath = path.join(featurePath, "patches");
 
@@ -83,7 +83,7 @@ export async function createProject({
   language,
   features,
 }: CreateProjectOptions) {
-  const templatePath = path.join(__dirname, "../templates/base", language);
+  const templatePath = path.join(__dirname, "../../templates/base", language);
   const cwd = process.env.INIT_CWD || process.cwd();
   const targetPath = path.resolve(cwd, projectName);
 
