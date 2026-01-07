@@ -1,5 +1,13 @@
 {
   "dependencies": {
+    "bcrypt": "^5.1.1",
+    "cookie-parser": "^1.4.7",
+    "jsonwebtoken": "^9.0.2",
     "mysql2": "^3.16.0"
+  },
+  "devDependencies": {
+    "@types/bcrypt": "^5.0.2",
+    "@types/cookie-parser": "^1.4.8",
+    "@types/jsonwebtoken": "^9.0.10"
   }
 }

@@ -18,3 +18,14 @@ export const testDB = async () => {
     console.error("MySQL connection failed", err);
   }
 };
+
+export const ensureUsersTable = async () => {
+  await db.query(`
+    CREATE TABLE IF NOT EXISTS users (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      email VARCHAR(255) NOT NULL UNIQUE,
+      password VARCHAR(255) NOT NULL,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )
+  `);
+};
