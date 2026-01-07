@@ -29,4 +29,4 @@ npx mern-stacker my-app
 
 ## Contributing
 
-Want to help? See `CONTRIBUTION.md` for setup and contribution guidelines.
+Want to help? See [`CONTRIBUTION.md`](https://github.com/Hamed-Ajaj/mern-stacker/blob/master/CONTRIBUTION.md) for setup and contribution guidelines.
