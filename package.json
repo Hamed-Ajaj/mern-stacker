@@ -8,6 +8,14 @@
       "type": "MIT"
     }
   ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Hamed-Ajaj/mern-stacker.git"
+  },
+  "homepage": "https://github.com/Hamed-Ajaj/mern-stacker",
+  "bugs": {
+    "url": "https://github.com/Hamed-Ajaj/mern-stacker/issues"
+  },
   "type": "module",
   "author": "Hamed Ajaj",
   "keywords": [
