@@ -49,7 +49,8 @@ async function applyFeature(
   language: Language,
   featureName: string,
 ) {
-  const featurePath = path.join(__dirname, "../../templates/features", featureName);
+  const templatesDir = await resolveTemplatesDir();
+  const featurePath = path.join(templatesDir, "features", featureName);
   const featureFilesPath = path.join(featurePath, "files", language);
   const featurePatchesPath = path.join(featurePath, "patches");
 
@@ -83,7 +84,8 @@ export async function createProject({
   language,
   features,
 }: CreateProjectOptions) {
-  const templatePath = path.join(__dirname, "../../templates/base", language);
+  const templatesDir = await resolveTemplatesDir();
+  const templatePath = path.join(templatesDir, "base", language);
   const cwd = process.env.INIT_CWD || process.cwd();
   const targetPath = path.resolve(cwd, projectName);
 
@@ -96,4 +98,19 @@ export async function createProject({
   for (const feature of features) {
     await applyFeature(targetPath, language, feature);
   }
+}
+
+async function resolveTemplatesDir() {
+  const candidates = [
+    path.resolve(__dirname, "..", "..", "templates"),
+    path.resolve(__dirname, "..", "templates"),
+  ];
+
+  for (const candidate of candidates) {
+    if (await fs.pathExists(candidate)) {
+      return candidate;
+    }
+  }
+
+  throw new Error("Templates directory not found");
 }

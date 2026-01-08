@@ -1,3 +1,4 @@
+import "dotenv/config";
 import { app } from "./app";
 import { ensureUsersTable, testDB } from "./db";
 
