@@ -27,9 +27,8 @@ export async function run(projectName?: string) {
       { name: "None", value: "none" },
       { name: "React Router", value: "router-react" },
       {
-        name: "TanStack Router",
-        value: "tanstack-router",
-        disabled: "(Coming soon)",
+        name: "TanStack Router (recommended with TypeScript)",
+        value: "router-tanstack",
       },
     ],
   });
@@ -103,6 +102,12 @@ export async function run(projectName?: string) {
       database,
       dockerFeature,
     ].filter((feature) => feature !== "none");
+
+    if (router === "router-tanstack") {
+      if (frontendFeatures.includes("tailwind")) {
+        selectedFeatures.push("router-tanstack-tailwind");
+      }
+    }
 
     await createProject({
       projectName: resolvedName,

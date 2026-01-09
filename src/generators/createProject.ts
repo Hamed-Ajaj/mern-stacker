@@ -98,6 +98,11 @@ export async function createProject({
   for (const feature of features) {
     await applyFeature(targetPath, language, feature);
   }
+
+  if (features.includes("router-tanstack")) {
+    const appFile = language === "ts" ? "App.tsx" : "App.jsx";
+    await fs.remove(path.join(targetPath, "client", "src", appFile));
+  }
 }
 
 async function resolveTemplatesDir() {

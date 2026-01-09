@@ -79,6 +79,10 @@ async function createProject({
   for (const feature of features) {
     await applyFeature(targetPath, language, feature);
   }
+  if (features.includes("router-tanstack")) {
+    const appFile = language === "ts" ? "App.tsx" : "App.jsx";
+    await fs.remove(path.join(targetPath, "client", "src", appFile));
+  }
 }
 async function resolveTemplatesDir() {
   const candidates = [
@@ -112,9 +116,8 @@ async function run(projectName) {
       { name: "None", value: "none" },
       { name: "React Router", value: "router-react" },
       {
-        name: "TanStack Router",
-        value: "tanstack-router",
-        disabled: "(Coming soon)"
+        name: "TanStack Router (recommended with TypeScript)",
+        value: "router-tanstack"
       }
     ]
   });
@@ -127,6 +130,10 @@ async function run(projectName) {
       ...language === "ts" ? [{ name: "Zod", value: "zod" }] : []
     ]
   });
+  const useShadcn = frontendFeatures.includes("tailwind") ? await confirm({
+    message: "Use shadcn/ui?",
+    default: false
+  }) : false;
   const database = await select({
     message: "Choose a database",
     choices: [
@@ -135,7 +142,7 @@ async function run(projectName) {
       { name: "MySQL", value: "db-mysql" }
     ]
   });
-  const dockerChoice = await select({
+  const dockerChoice = database === "none" ? "none" : await select({
     message: "Use Docker Compose for the database?",
     choices: [
       { name: "No", value: "none" },
@@ -160,10 +167,16 @@ async function run(projectName) {
     const dockerFeature = dockerChoice === "yes" && database !== "none" ? database === "db-postgres" ? "docker-postgres" : "docker-mysql" : "none";
     const selectedFeatures = [
       ...frontendFeatures,
+      ...useShadcn ? ["shadcn"] : [],
       router,
       database,
       dockerFeature
     ].filter((feature) => feature !== "none");
+    if (router === "router-tanstack") {
+      if (frontendFeatures.includes("tailwind")) {
+        selectedFeatures.push("router-tanstack-tailwind");
+      }
+    }
     await createProject({
       projectName: resolvedName,
       language,
@@ -192,7 +205,9 @@ async function run(projectName) {
     }
     console.log("\nNext steps:");
     console.log(`  cd ${resolvedName}`);
-    console.log("  docker compose up -d");
+    if (database !== "none" && dockerChoice === "yes") {
+      console.log("  docker compose up -d");
+    }
     if (!installDeps) {
       console.log(`  cd client && ${packageManager} install`);
       console.log(`  cd server && ${packageManager} install`);
