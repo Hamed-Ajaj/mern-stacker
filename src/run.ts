@@ -44,6 +44,13 @@ export async function run(projectName?: string) {
     ],
   });
 
+  const useShadcn = frontendFeatures.includes("tailwind")
+    ? await confirm({
+        message: "Use shadcn/ui?",
+        default: false,
+      })
+    : false;
+
   const database = await select({
     message: "Choose a database",
     choices: [
@@ -88,6 +95,7 @@ export async function run(projectName?: string) {
 
     const selectedFeatures = [
       ...frontendFeatures,
+      ...(useShadcn ? ["shadcn"] : []),
       router,
       database,
       dockerFeature,
