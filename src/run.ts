@@ -60,13 +60,16 @@ export async function run(projectName?: string) {
     ],
   });
 
-  const dockerChoice = await select({
-    message: "Use Docker Compose for the database?",
-    choices: [
-      { name: "No", value: "none" },
-      { name: "Yes", value: "yes" },
-    ],
-  });
+  const dockerChoice =
+    database === "none"
+      ? "none"
+      : await select({
+          message: "Use Docker Compose for the database?",
+          choices: [
+            { name: "No", value: "none" },
+            { name: "Yes", value: "yes" },
+          ],
+        });
 
   const packageManager = await select({
     message: "Choose a package manager",
@@ -133,7 +136,9 @@ export async function run(projectName?: string) {
 
     console.log("\nNext steps:");
     console.log(`  cd ${resolvedName}`);
-    console.log("  docker compose up -d");
+    if (database !== "none" && dockerChoice === "yes") {
+      console.log("  docker compose up -d");
+    }
     if (!installDeps) {
       console.log(`  cd client && ${packageManager} install`);
       console.log(`  cd server && ${packageManager} install`);
