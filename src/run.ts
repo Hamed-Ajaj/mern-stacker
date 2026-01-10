@@ -54,6 +54,7 @@ export async function run(projectName?: string) {
     message: "Choose a database",
     choices: [
       { name: "None", value: "none" },
+      { name: "MongoDB", value: "db-mongo" },
       { name: "Postgres", value: "db-postgres" },
       { name: "MySQL", value: "db-mysql" },
     ],
@@ -92,7 +93,9 @@ export async function run(projectName?: string) {
       dockerChoice === "yes" && database !== "none"
         ? database === "db-postgres"
           ? "docker-postgres"
-          : "docker-mysql"
+          : database === "db-mysql"
+            ? "docker-mysql"
+            : "docker-mongo"
         : "none";
 
     const selectedFeatures = [

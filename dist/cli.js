@@ -138,6 +138,7 @@ async function run(projectName) {
     message: "Choose a database",
     choices: [
       { name: "None", value: "none" },
+      { name: "MongoDB", value: "db-mongo" },
       { name: "Postgres", value: "db-postgres" },
       { name: "MySQL", value: "db-mysql" }
     ]
@@ -164,7 +165,7 @@ async function run(projectName) {
   });
   const spinner = ora("Creating project...").start();
   try {
-    const dockerFeature = dockerChoice === "yes" && database !== "none" ? database === "db-postgres" ? "docker-postgres" : "docker-mysql" : "none";
+    const dockerFeature = dockerChoice === "yes" && database !== "none" ? database === "db-postgres" ? "docker-postgres" : database === "db-mysql" ? "docker-mysql" : "docker-mongo" : "none";
     const selectedFeatures = [
       ...frontendFeatures,
       ...useShadcn ? ["shadcn"] : [],

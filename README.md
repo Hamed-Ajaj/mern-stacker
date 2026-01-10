@@ -12,7 +12,7 @@ Creating full-stack starters repeatedly is slow and error-prone. MERN Stacker so
 
 - Generating a clean, minimal base project
 - Composing features instead of duplicating templates
-- Letting you opt into only what you need (Tailwind, TanStack Query, Zustand, databases, Docker, etc.)
+- Letting you opt into only what you need (Tailwind, TanStack Query, Zustand, Postgres, MySQL, MongoDB, Docker, etc.)
 - Keeping the generated code understandable and easy to modify
 
 The goal is **a solid foundation, not a locked-in framework**.
