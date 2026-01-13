@@ -143,6 +143,16 @@ async function run(projectName) {
       { name: "MySQL", value: "db-mysql" }
     ]
   });
+  let orm = "none";
+  if (database === "db-postgres" || database === "db-mysql") {
+    orm = await select({
+      message: "Choose an ORM",
+      choices: [
+        { name: "Drizzle ORM", value: "drizzle" },
+        { name: "Prisma", value: "prisma" }
+      ]
+    });
+  }
   const dockerChoice = database === "none" ? "none" : await select({
     message: "Use Docker Compose for the database?",
     choices: [
@@ -166,11 +176,16 @@ async function run(projectName) {
   const spinner = ora("Creating project...").start();
   try {
     const dockerFeature = dockerChoice === "yes" && database !== "none" ? database === "db-postgres" ? "docker-postgres" : database === "db-mysql" ? "docker-mysql" : "docker-mongo" : "none";
+    let ormFeature = "none";
+    if (orm !== "none" && database !== "none") {
+      ormFeature = `${orm}-${database.replace("db-", "")}`;
+    }
     const selectedFeatures = [
       ...frontendFeatures,
       ...useShadcn ? ["shadcn"] : [],
       router,
       database,
+      ormFeature,
       dockerFeature
     ].filter((feature) => feature !== "none");
     if (router === "router-tanstack") {
@@ -212,6 +227,9 @@ async function run(projectName) {
     if (!installDeps) {
       console.log(`  cd client && ${packageManager} install`);
       console.log(`  cd server && ${packageManager} install`);
+    }
+    if (orm === "drizzle") {
+      console.log(`  cd server && ${packageManager} run db:push`);
     }
     const runScript = packageManager === "npm" ? "npm run dev" : `${packageManager} dev`;
     console.log(`  cd client && ${runScript}`);

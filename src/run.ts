@@ -4,6 +4,8 @@ import { execa } from "execa";
 import path from "path";
 import { createProject } from "./generators/createProject.ts";
 
+type Language = "ts" | "js";
+
 export async function run(projectName?: string) {
   const resolvedName =
     projectName?.trim() ||
@@ -13,7 +15,7 @@ export async function run(projectName?: string) {
         value.trim().length > 0 || "Please enter a project name",
     }));
 
-  const language = await select({
+  const language: Language = await select({
     message: "Choose a language",
     choices: [
       { name: "TypeScript", value: "ts" },
@@ -60,6 +62,17 @@ export async function run(projectName?: string) {
     ],
   });
 
+  let orm = "none";
+  if (database === "db-postgres" || database === "db-mysql") {
+    orm = await select({
+      message: "Choose an ORM",
+      choices: [
+        { name: "Drizzle ORM", value: "drizzle" },
+        { name: "Prisma", value: "prisma" },
+      ],
+    });
+  }
+
   const dockerChoice =
     database === "none"
       ? "none"
@@ -98,11 +111,17 @@ export async function run(projectName?: string) {
             : "docker-mongo"
         : "none";
 
+    let ormFeature = "none";
+    if (orm !== "none" && database !== "none") {
+      ormFeature = `${orm}-${database.replace("db-", "")}`;
+    }
+
     const selectedFeatures = [
       ...frontendFeatures,
       ...(useShadcn ? ["shadcn"] : []),
       router,
       database,
+      ormFeature,
       dockerFeature,
     ].filter((feature) => feature !== "none");
 
@@ -150,6 +169,9 @@ export async function run(projectName?: string) {
     if (!installDeps) {
       console.log(`  cd client && ${packageManager} install`);
       console.log(`  cd server && ${packageManager} install`);
+    }
+    if (orm === "drizzle") {
+      console.log(`  cd server && ${packageManager} run db:push`);
     }
     const runScript = packageManager === "npm" ? "npm run dev" : `${packageManager} dev`;
     console.log(`  cd client && ${runScript}`);
