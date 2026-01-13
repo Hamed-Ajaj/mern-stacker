@@ -2,7 +2,7 @@
   "name": "mern-stacker",
   "private": false,
   "description": "Scaffold a modern MERN-style stack with React, Vite, and Express",
-  "version": "0.5.0",
+  "version": "1.0.0",
   "licenses": [
     {
       "type": "MIT"
