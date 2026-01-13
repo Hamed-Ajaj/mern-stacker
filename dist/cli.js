@@ -228,7 +228,7 @@ async function run(projectName) {
       console.log(`  cd client && ${packageManager} install`);
       console.log(`  cd server && ${packageManager} install`);
     }
-    if (orm === "drizzle") {
+    if (orm === "drizzle" || orm === "prisma") {
       console.log(`  cd server && ${packageManager} run db:push`);
     }
     const runScript = packageManager === "npm" ? "npm run dev" : `${packageManager} dev`;
