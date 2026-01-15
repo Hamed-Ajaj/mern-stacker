@@ -73,6 +73,20 @@ export async function run(projectName?: string) {
     });
   }
 
+  const authChoice =
+    database === "none"
+      ? "none"
+      : await select({
+          message: "Authentication",
+          choices: [
+            { name: "None", value: "none" },
+            { name: "JWT (basic)", value: "jwt" },
+            ...(language === "ts"
+              ? [{ name: "Better Auth (batteries included)", value: "better-auth" }]
+              : []),
+          ],
+        });
+
   const dockerChoice =
     database === "none"
       ? "none"
@@ -116,12 +130,29 @@ export async function run(projectName?: string) {
       ormFeature = `${orm}-${database.replace("db-", "")}`;
     }
 
+    let authFeature = "none";
+    if (authChoice === "better-auth") {
+      if (orm !== "none") {
+        authFeature = `auth-better-${orm}-${database.replace("db-", "")}`;
+      } else {
+        authFeature = `auth-better-${database}`;
+      }
+    } else if (authChoice === "jwt") {
+      if (orm !== "none") {
+        authFeature = `auth-jwt-${orm}-${database.replace("db-", "")}`;
+      } else {
+        authFeature = `auth-jwt-${database}`;
+      }
+    }
+
     const selectedFeatures = [
       ...frontendFeatures,
       ...(useShadcn ? ["shadcn"] : []),
       router,
       database,
       ormFeature,
+      ...(authChoice === "better-auth" ? ["auth-better"] : []),
+      authFeature,
       dockerFeature,
     ].filter((feature) => feature !== "none");
 
