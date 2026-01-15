@@ -6,6 +6,7 @@ type UserFields = {
 };
 
 const mongoUri = process.env.MONGO_URI || "mongodb://localhost:27017/app_db";
+let connectionPromise: Promise<typeof mongoose> | null = null;
 
 const userSchema = new Schema<UserFields>(
   {
@@ -21,7 +22,10 @@ export const User =
 
 export const connectDB = async () => {
   try {
-    await mongoose.connect(mongoUri);
+    if (!connectionPromise) {
+      connectionPromise = mongoose.connect(mongoUri);
+    }
+    await connectionPromise;
     console.log("MongoDB connected");
   } catch (err) {
     console.error("MongoDB connection failed", err);
