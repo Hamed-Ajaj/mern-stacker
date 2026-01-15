@@ -1,0 +1,12 @@
+{
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/server.ts"
+  },
+  "dependencies": {
+    "better-auth": "^1.4.13"
+  },
+  "devDependencies": {
+    "tsx": "^4.20.5"
+  }
+}
