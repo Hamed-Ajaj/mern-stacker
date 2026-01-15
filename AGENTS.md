@@ -2,12 +2,14 @@
 
 ## Project Structure & Module Organization
 - `src/` contains the CLI source: `src/cli.ts` (entry point), `src/run.ts` (execution flow), and `src/generators/createBase.ts` (template generation).
-- `templates/` holds the scaffolded MERN starter: `templates/base/client/` (Vite + React) and `templates/base/server/` (Express + TS).
+- `templates/` holds scaffolding assets: `templates/base/js|ts/client/` (Vite + React) and `templates/base/js|ts/server/` (Express), plus `templates/features/` for optional patches/files (DBs, routers, auth, UI).
+- Authentication features are split by provider and DB (e.g., `auth-jwt-*`, `auth-better-*`) to keep base DB templates auth-agnostic.
 - `dist/` is the built CLI output (ESM) produced by `tsup`.
 
 ## Build, Test, and Development Commands
 - `pnpm dev`: run the CLI directly with `ts-node` for local development.
 - `pnpm build`: bundle `src/cli.ts` into `dist/` for publishing or local linking.
+- Better Auth templates switch the server to ESM and use `tsx` for `server` dev scripts.
 
 ## Coding Style & Naming Conventions
 - TypeScript, ESM modules (`"type": "module"`). Use strict typing and avoid `any` unless justified.
