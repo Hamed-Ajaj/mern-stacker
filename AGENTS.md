@@ -1,8 +1,9 @@
 # Repository Guidelines
 
 ## Project Structure & Module Organization
-- `src/` contains the CLI source: `src/cli.ts` (entry point), `src/run.ts` (execution flow), and `src/generators/createBase.ts` (template generation).
+- `src/` contains the CLI source: `src/cli.ts` (entry point), `src/run.ts` (execution flow), and `src/generators/createProject.ts` (template generation).
 - `templates/` holds scaffolding assets: `templates/base/js|ts/client/` (Vite + React) and `templates/base/js|ts/server/` (Express), plus `templates/features/` for optional patches/files (DBs, routers, auth, UI).
+- Monorepo generation (TypeScript-only) maps `client` -> `apps/web`, `server` -> `apps/api`, and shared features like `zod` -> `packages/shared`.
 - Authentication features are split by provider and DB (e.g., `auth-jwt-*`, `auth-better-*`) to keep base DB templates auth-agnostic.
 - `dist/` is the built CLI output (ESM) produced by `tsup`.
 

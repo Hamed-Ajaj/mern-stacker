@@ -5,6 +5,7 @@ import path from "path";
 import { createProject } from "./generators/createProject.ts";
 
 type Language = "ts" | "js";
+type ProjectStructure = "standard" | "monorepo";
 
 export async function run(projectName?: string) {
   const resolvedName =
@@ -22,6 +23,24 @@ export async function run(projectName?: string) {
       { name: "JavaScript", value: "js" },
     ],
   });
+
+  let projectStructure: ProjectStructure = "standard";
+  while (true) {
+    projectStructure = await select({
+      message: "Project structure:",
+      choices: [
+        { name: "Standard (client / server)", value: "standard" },
+        { name: "Monorepo (apps / packages) [TypeScript only]", value: "monorepo" },
+      ],
+    });
+
+    if (projectStructure === "monorepo" && language === "js") {
+      console.log("Monorepo mode requires TypeScript.");
+      continue;
+    }
+
+    break;
+  }
 
   const router = await select({
     message: "Choose a router",
@@ -103,7 +122,6 @@ export async function run(projectName?: string) {
     choices: [
       { name: "pnpm", value: "pnpm" },
       { name: "npm", value: "npm" },
-      { name: "yarn", value: "yarn" },
       { name: "bun", value: "bun" },
     ],
   });
@@ -166,6 +184,8 @@ export async function run(projectName?: string) {
       projectName: resolvedName,
       language,
       features: selectedFeatures,
+      structure: projectStructure,
+      packageManager,
     });
 
     spinner.succeed("Project created successfully");
@@ -177,14 +197,21 @@ export async function run(projectName?: string) {
     if (installDeps) {
       const installSpinner = ora("Installing dependencies...").start();
       try {
-        await execa(packageManager, installArgs, {
-          cwd: path.join(projectPath, "client"),
-          stdio: "inherit",
-        });
-        await execa(packageManager, installArgs, {
-          cwd: path.join(projectPath, "server"),
-          stdio: "inherit",
-        });
+        if (projectStructure === "monorepo") {
+          await execa(packageManager, installArgs, {
+            cwd: projectPath,
+            stdio: "inherit",
+          });
+        } else {
+          await execa(packageManager, installArgs, {
+            cwd: path.join(projectPath, "client"),
+            stdio: "inherit",
+          });
+          await execa(packageManager, installArgs, {
+            cwd: path.join(projectPath, "server"),
+            stdio: "inherit",
+          });
+        }
         installSpinner.succeed("Dependencies installed");
       } catch (installError) {
         installSpinner.fail("Failed to install dependencies");
@@ -198,15 +225,30 @@ export async function run(projectName?: string) {
       console.log("  docker compose up -d");
     }
     if (!installDeps) {
-      console.log(`  cd client && ${packageManager} install`);
-      console.log(`  cd server && ${packageManager} install`);
+      if (projectStructure === "monorepo") {
+        console.log(`  ${packageManager} install`);
+      } else {
+        console.log(`  cd client && ${packageManager} install`);
+        console.log(`  cd server && ${packageManager} install`);
+      }
     }
     if (orm === "drizzle" || orm === "prisma") {
-      console.log(`  cd server && ${packageManager} run db:push`);
+      const apiPath = projectStructure === "monorepo" ? "apps/api" : "server";
+      console.log(`  cd ${apiPath} && ${packageManager} run db:push`);
     }
-    const runScript = packageManager === "npm" ? "npm run dev" : `${packageManager} dev`;
-    console.log(`  cd client && ${runScript}`);
-    console.log(`  cd server && ${runScript}`);
+    const runScript =
+      packageManager === "npm"
+        ? "npm run dev"
+        : packageManager === "bun"
+          ? "bun run dev"
+          : `${packageManager} dev`;
+
+    if (projectStructure === "monorepo") {
+      console.log(`  ${runScript}`);
+    } else {
+      console.log(`  cd client && ${runScript}`);
+      console.log(`  cd server && ${runScript}`);
+    }
   } catch (error) {
     spinner.fail("Failed to create project");
     console.error(error);
