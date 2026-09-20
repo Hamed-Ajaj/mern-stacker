@@ -1,3 +1,5 @@
+
+
 # MERN Stacker
 
 **MERN Stacker** is a CLI tool that scaffolds a modern MERN-style project with a **React + Vite frontend** and an **Express backend**.
@@ -26,6 +28,8 @@ Run the CLI using `npx`:
 ```bash
 npx mern-stacker my-app
 ```
+
+The project name argument is used as the directory name for the generated project.
 
 ## Contributing
 
